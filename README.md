@@ -1,5 +1,9 @@
 # Nexautia E-commerce Template
 
+> Copyright (c) 2026 Nexautia. All rights reserved. This is proprietary
+> software. Its public availability does not authorize reuse, modification,
+> distribution, or commercial exploitation. See [LICENSE](LICENSE).
+
 Base privada y reutilizable para crear comercios electrónicos para distintos clientes.
 
 ## Estado actual
@@ -32,4 +36,3 @@ las variables.
 3. Construir catálogo, ficha de producto y carrito.
 4. Añadir autenticación y zona de cliente.
 5. Integrar pagos mediante un proveedor como Stripe.
-

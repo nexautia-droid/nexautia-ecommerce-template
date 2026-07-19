@@ -23,3 +23,6 @@ Thumbs.db
 # Logs
 *.log
 
+
+# Local npm cache used by Codex
+.npm-cache/
