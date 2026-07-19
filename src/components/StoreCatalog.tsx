@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getCatalog, type CatalogProduct } from "@/lib/catalog";
 import type { Locale } from "@/lib/dictionaries";
 import { supabase } from "@/lib/supabase";
@@ -25,6 +25,9 @@ export default function StoreCatalog({ locale, categoriesTitle, productsTitle, e
   const [visibleCount, setVisibleCount] = useState(12);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [productsInView, setProductsInView] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const productsSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -41,6 +44,14 @@ export default function StoreCatalog({ locale, categoriesTitle, productsTitle, e
     }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [locale]);
+
+  useEffect(() => {
+    const section = productsSectionRef.current;
+    if (!section) return;
+    const observer = new IntersectionObserver(([entry]) => setProductsInView(entry.isIntersecting), { threshold: 0 });
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   const categoryProducts = useMemo(() => selectedCategory ? products.filter((product) => product.categoryId === selectedCategory) : products, [products, selectedCategory]);
   const filteredProducts = useMemo(() => {
@@ -65,17 +76,19 @@ export default function StoreCatalog({ locale, categoriesTitle, productsTitle, e
         {categories.map((category, index) => <button type="button" onClick={() => selectCategory(category.id)} className={`category-card ${tones[index % tones.length]} ${selectedCategory === category.id ? "selected" : ""}`} key={category.id}><span>{String(index + 2).padStart(2, "0")}</span><strong>{category.name}</strong><i>→</i></button>)}
       </div>
     </section>
-    <section className="section products" id="productos" aria-labelledby="products-title">
+    <section ref={productsSectionRef} className="section products" id="productos" aria-labelledby="products-title">
       <div className="section-heading horizontal"><div><p className="eyebrow">{edition}</p><h2 id="products-title">{selectedName ?? productsTitle}</h2></div><button className="text-link catalog-all" type="button" onClick={() => selectCategory(null)}>{viewAll} →</button></div>
       <div className="catalog-toolbar">
-        <label><span className="sr-only">{locale === "es" ? "Buscar productos" : "Cercar productes"}</span><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setVisibleCount(12); }} placeholder={locale === "es" ? "Buscar por producto o palabra…" : "Cercar per producte o paraula…"}/></label>
+        <label><span className="sr-only">{locale === "es" ? "Buscar productos" : "Cercar productes"}</span><input type="search" value={query} onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)} onChange={(event) => { setQuery(event.target.value); setVisibleCount(12); }} placeholder={locale === "es" ? "Buscar por producto o palabra…" : "Cercar per producte o paraula…"}/></label>
         <span className="result-count">{filteredProducts.length} {locale === "es" ? (filteredProducts.length === 1 ? "resultado" : "resultados") : (filteredProducts.length === 1 ? "resultat" : "resultats")}</span>
-        <button type="button" onClick={() => document.getElementById("categorias")?.scrollIntoView({ behavior: "smooth" })}>↑ {locale === "es" ? "Volver a categorías" : "Tornar a categories"}</button>
+        <button className="catalog-return-inline" type="button" onClick={() => document.getElementById("categorias")?.scrollIntoView({ behavior: "smooth" })}>↑ {locale === "es" ? "Volver a categorías" : "Tornar a categories"}</button>
       </div>
+      {productsInView && !searchFocused && <button className="catalog-return-floating" type="button" onClick={() => document.getElementById("categorias")?.scrollIntoView({ behavior: "smooth" })}>↑ {locale === "es" ? "Categorías" : "Categories"}</button>}
       {loading ? <p className="catalog-state">{locale === "es" ? "Actualizando catálogo…" : "Actualitzant el catàleg…"}</p>
         : error ? <p className="catalog-state error">{error}</p>
         : filteredProducts.length === 0 ? <p className="catalog-state empty">{query ? (locale === "es" ? "No se encontraron productos con esa búsqueda." : "No s'han trobat productes amb aquesta cerca.") : selectedCategory ? (locale === "es" ? "No hay productos en esta categoría." : "No hi ha productes en aquesta categoria.") : (locale === "es" ? "No hay productos publicados en este momento." : "No hi ha productes publicats en aquest moment.")}</p>
         : <><div className="product-grid">{shownProducts.map((product, index) => <Link href={`/${locale}/producto/${product.slug}`} className="product" key={product.id}><div className={`product-image ${product.tone}`}><span>{String(index + 1).padStart(2, "0")}</span><div className="object"/></div><div className="product-meta"><h3>{product.name}</h3><p>{product.price.toFixed(2)} EUR</p></div></Link>)}</div>{shownProducts.length < filteredProducts.length && <button className="load-more" type="button" onClick={() => setVisibleCount((count) => count + 12)}>{locale === "es" ? "Mostrar más productos" : "Mostrar més productes"}</button>}</>}
     </section>
+    <style jsx>{`.catalog-return-floating{display:none}@media(max-width:620px){.catalog-toolbar{position:static;grid-template-columns:1fr auto;padding:.75rem}.catalog-toolbar label{grid-column:1/-1}.catalog-return-inline{display:none}.catalog-return-floating{display:block;position:fixed;right:1rem;bottom:max(1rem,env(safe-area-inset-bottom));z-index:30;border:0;border-radius:999px;background:var(--ink);color:#fff;padding:.7rem .9rem;box-shadow:0 5px 20px rgba(0,0,0,.28);font-size:.82rem;cursor:pointer}}`}</style>
   </>;
 }
