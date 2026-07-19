@@ -8,9 +8,9 @@ import { getCatalog } from "@/lib/catalog";
 import { publicAsset, publicSiteUrl } from "@/lib/site";
 
 const categories = [
-  { name: "Mesa", tone: "sand", number: "01" },
-  { name: "Hogar", tone: "sage", number: "02" },
-  { name: "Bienestar", tone: "clay", number: "03" },
+  { tone: "sand", number: "01" },
+  { tone: "sage", number: "02" },
+  { tone: "clay", number: "03" },
 ];
 
 export function generateStaticParams() { return locales.map((lang) => ({ lang })); }
@@ -47,7 +47,7 @@ export default async function Storefront({ params }: { params: Promise<{ lang: s
         <Link href={`/${locale}`} className="brand" aria-label="Nexautia Shop">
           <Image src={publicAsset("/brand/logo.svg")} width={204} height={60} alt="Nexautia" priority />
         </Link>
-        <nav aria-label="Navegacion principal">{d.nav.map((item) => <a href="#productos" key={item}>{item}</a>)}</nav>
+        <nav aria-label={d.mainNavLabel}>{d.nav.map((item) => <a href="#productos" key={item}>{item}</a>)}</nav>
         <div className="header-actions">
           <button aria-label={d.search}>⌕</button><button>{d.account}</button><CartIndicator lang={locale}/>
           <Link className="language" href={`/${other}`} hrefLang={other}>{other.toUpperCase()}</Link>
@@ -60,16 +60,16 @@ export default async function Storefront({ params }: { params: Promise<{ lang: s
             <p className="eyebrow">{d.eyebrow}</p><h1>{d.title}</h1><p className="lead">{d.intro}</p>
             <div className="hero-actions"><a className="button primary" href="#productos">{d.cta}</a><a className="text-link" href="#historia">{d.secondary} →</a></div>
           </div>
-          <div className="hero-art" aria-label="Composicion editorial de producto"><span className="orb orb-one"/><span className="orb orb-two"/><span className="vase"/><span className="pedestal"/></div>
+          <div className="hero-art" aria-label={d.heroArtLabel}><span className="orb orb-one"/><span className="orb orb-two"/><span className="vase"/><span className="pedestal"/></div>
         </section>
 
         <section className="section categories" aria-labelledby="categories-title">
           <div className="section-heading"><p className="eyebrow">01 / 03</p><h2 id="categories-title">{d.categoriesTitle}</h2></div>
-          <div className="category-grid">{categories.map((category) => <a href="#productos" className={`category-card ${category.tone}`} key={category.name}><span>{category.number}</span><strong>{category.name}</strong><i>→</i></a>)}</div>
+          <div className="category-grid">{categories.map((category, index) => <a href="#productos" className={`category-card ${category.tone}`} key={category.number}><span>{category.number}</span><strong>{d.categoryNames[index]}</strong><i>→</i></a>)}</div>
         </section>
 
         <section className="section products" id="productos" aria-labelledby="products-title">
-          <div className="section-heading horizontal"><div><p className="eyebrow">Edicion Nexautia</p><h2 id="products-title">{d.productsTitle}</h2></div><a className="text-link" href="#productos">{d.viewAll} →</a></div>
+          <div className="section-heading horizontal"><div><p className="eyebrow">{d.edition}</p><h2 id="products-title">{d.productsTitle}</h2></div><a className="text-link" href="#productos">{d.viewAll} →</a></div>
           <div className="product-grid">{products.map((product, index) => <Link href={`/${locale}/producto/${product.slug}`} className="product" key={product.id}><div className={`product-image ${product.tone}`}><span>{String(index + 1).padStart(2, "0")}</span><div className="object"/></div><div className="product-meta"><h3>{product.name}</h3><p>{product.price} EUR</p></div></Link>)}</div>
         </section>
 
