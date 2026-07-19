@@ -140,3 +140,21 @@ footer { background:#111914; color:#fff; padding:4rem 4vw; display:grid; grid-te
 .status.inactive { background:#ead8d4; color:#743a31; }
 @media(max-width:1000px){.control-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.control-grid{grid-template-columns:1fr}.control-form>.form-grid,.control-form fieldset{padding:1rem}.control-card{min-height:0}.control-actions button,.control-actions a{font-size:1rem;padding:.8rem}.control-card dl div{grid-template-columns:1fr;gap:.25rem;font-size:.95rem}}
+
+/* High contrast only for Nexautia's central client panel */
+.control-shell { background:#0d1510; color:#f8fbf9; }
+.control-shell .admin-header { background:#070c09; border-bottom:2px solid #73847a; }
+.control-shell .admin-title>div>p:last-child { color:#eef4f0; }
+.control-shell .admin-primary { background:#f8fbf9; color:#0a110d; border:2px solid #f8fbf9; font-weight:700; }
+.control-shell .admin-error,.control-shell .admin-notice { background:#202c24; color:#fff; }
+.control-shell .control-explanation,.control-shell .control-form>.form-grid,.control-shell .control-form fieldset,.control-shell .control-card { background:#1a251e; color:#fff; border-color:#718078; }
+.control-shell .form-grid small,.control-shell .control-card>p,.control-shell .control-card dt,.control-shell .control-store-status { color:#edf3ef; }
+.control-shell .control-actions button,.control-shell .control-actions a,.control-shell .form-actions>button:first-child { background:#f8fbf9; color:#0a110d; border:2px solid #f8fbf9; font-weight:700; }
+.control-shell .form-grid input,.control-shell .form-grid select,.control-shell .form-grid textarea { border:2px solid #0a110d; background:#fff; color:#0a110d; }
+.control-shell .control-card { box-shadow:0 0 0 1px rgba(255,255,255,.08); }
+.control-card h2 { font-size:2rem; }
+.control-card dl div { font-size:.95rem; }
+.status.active { background:#bfe8c9; color:#123d1d; }
+.status.trial { background:#ffe7a8; color:#3e2c00; }
+.status.inactive,.status.archived { background:#ffd2c9; color:#58150d; }
+@media(max-width:620px){.control-card h2{font-size:2.15rem}.control-card dl div{font-size:1.05rem}.control-store-status{font-size:.95rem}}
