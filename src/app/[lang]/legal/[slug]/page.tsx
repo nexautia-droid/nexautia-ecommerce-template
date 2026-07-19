@@ -1,4 +1,5 @@
-import Image from "next/image";
+﻿import Image from "next/image";
+import { publicAsset } from "@/lib/site";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { locales, type Locale } from "@/lib/dictionaries";
@@ -29,7 +30,8 @@ export default async function LegalPage({ params }: { params: Promise<{ lang: st
   const page = (pages[locale] as Record<string, readonly [string, string, string]>)[slug];
   if (!page) notFound();
   return <main className="legal-page">
-    <header className="detail-header"><Link href={`/${locale}`}><Image src="/brand/logo.svg" width={204} height={60} alt="Nexautia"/></Link><Link href={`/${locale}`}>{locale === "es" ? "Volver a la tienda" : "Tornar a la botiga"} &larr;</Link></header>
+    <header className="detail-header"><Link href={`/${locale}`}><Image src={publicAsset("/brand/logo.svg")} width={204} height={60} alt="Nexautia"/></Link><Link href={`/${locale}`}>{locale === "es" ? "Volver a la tienda" : "Tornar a la botiga"} &larr;</Link></header>
     <article className="legal-copy"><p className="eyebrow">Nexautia / E-commerce</p><h1>{page[0]}</h1><p>{page[1]}</p><p>{page[2]}</p><aside>{locale === "es" ? "Texto inicial de plantilla: deber\u00e1 revisarse con los datos reales de cada comercio." : "Text inicial de plantilla: s'haur\u00e0 de revisar amb les dades reals de cada comer\u00e7."}</aside></article>
   </main>;
 }
+

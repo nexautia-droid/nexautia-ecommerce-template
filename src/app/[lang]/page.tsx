@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getDictionary, locales, type Locale } from "@/lib/dictionaries";
 import CartIndicator from "@/components/CartIndicator";
 import { getCatalog } from "@/lib/catalog";
+import { publicAsset, publicSiteUrl } from "@/lib/site";
 
 const categories = [
   { name: "Mesa", tone: "sand", number: "01" },
@@ -34,7 +35,7 @@ export default async function Storefront({ params }: { params: Promise<{ lang: s
   const other = locale === "es" ? "ca" : "es";
   const structuredData = {
     "@context": "https://schema.org", "@type": "OnlineStore", name: "Nexautia Shop",
-    url: `https://tienda.nexautia.com/${locale}`, inLanguage: locale,
+    url: `${publicSiteUrl}/${locale}`, inLanguage: locale,
     description: d.intro, currenciesAccepted: "EUR",
   };
 
@@ -44,7 +45,7 @@ export default async function Storefront({ params }: { params: Promise<{ lang: s
       <div id="top" className="announcement">{d.announcement}</div>
       <header className="site-header">
         <Link href={`/${locale}`} className="brand" aria-label="Nexautia Shop">
-          <Image src="/brand/logo.svg" width={204} height={60} alt="Nexautia" priority />
+          <Image src={publicAsset("/brand/logo.svg")} width={204} height={60} alt="Nexautia" priority />
         </Link>
         <nav aria-label="Navegacion principal">{d.nav.map((item) => <a href="#productos" key={item}>{item}</a>)}</nav>
         <div className="header-actions">
@@ -77,8 +78,9 @@ export default async function Storefront({ params }: { params: Promise<{ lang: s
         <section className="newsletter"><div><p className="eyebrow">Newsletter</p><h2>{d.newsletter}</h2></div><form><label className="sr-only" htmlFor="email">{d.email}</label><input id="email" type="email" placeholder={d.email}/><button type="submit">{d.subscribe} →</button></form></section>
       </main>
 
-      <footer><Image src="/brand/logo.svg" width={204} height={60} alt="Nexautia"/><div>{d.footer.map((item, index) => <Link href={`/${locale}/legal/${locale === "es" ? ["ayuda", "envios-devoluciones", "privacidad", "condiciones"][index] : ["ajuda", "enviaments-devolucions", "privacitat", "condicions"][index]}`} key={item}>{item}</Link>)}</div><p>© 2026 Nexautia. Template e-commerce.</p></footer>
+      <footer><Image src={publicAsset("/brand/logo.svg")} width={204} height={60} alt="Nexautia"/><div>{d.footer.map((item, index) => <Link href={`/${locale}/legal/${locale === "es" ? ["ayuda", "envios-devoluciones", "privacidad", "condiciones"][index] : ["ajuda", "enviaments-devolucions", "privacitat", "condicions"][index]}`} key={item}>{item}</Link>)}</div><p>© 2026 Nexautia. Template e-commerce.</p></footer>
     </>
   );
 }
+
 
