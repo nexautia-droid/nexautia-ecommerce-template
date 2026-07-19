@@ -116,3 +116,27 @@ footer { background:#111914; color:#fff; padding:4rem 4vw; display:grid; grid-te
 .admin-login form,.admin-login section { width:min(100%,520px); padding:3rem; display:grid; gap:1.2rem; background:var(--paper); }.admin-login img { width:150px; padding:.8rem; background:var(--ink); }.admin-login>p { color:white; }
 @media(max-width:900px){.admin-table article{grid-template-columns:1fr auto}.admin-table article>span:nth-of-type(2){grid-column:1}.form-grid.compact{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.admin-header{align-items:flex-start;gap:1rem}.admin-header>div{gap:.7rem;flex-wrap:wrap;justify-content:flex-end}.admin-header img{width:105px}.admin-title{align-items:flex-start;flex-direction:column}.admin-table article{grid-template-columns:1fr}.admin-table article>span:nth-of-type(2){grid-column:auto}.row-actions{flex-wrap:wrap}.row-actions button{font-size:1rem;padding:.75rem .9rem}.form-grid,.form-grid.compact{grid-template-columns:1fr}.form-grid .wide{grid-column:auto}.form-grid label,.admin-login label{font-size:1rem}.form-grid small{font-size:1rem;line-height:1.6}.form-grid input,.form-grid select,.form-grid textarea,.admin-login input{font-size:1rem;padding:1rem}.product-form fieldset{padding:1rem}.admin-login form,.admin-login section{padding:2rem 1.4rem}.admin-guide summary{font-size:1.05rem;padding:1.2rem}.admin-guide>div{font-size:1rem;line-height:1.7}.admin-guide ol{gap:1rem}}
+
+/* Nexautia internal multi-client control panel */
+.control-loading { padding:4rem; }
+.control-explanation { margin:-1rem 0 2.5rem; padding:1rem 1.2rem; border-left:4px solid var(--green); background:#fff; line-height:1.6; }
+.control-form { display:grid; gap:2rem; }
+.control-form>.form-grid,.control-form fieldset { padding:1.5rem; border:1px solid var(--line); background:#fff; }
+.control-form fieldset { margin:0; }
+.control-form legend { padding:0 .6rem; font-family:'Playfair Display',serif; font-size:1.4rem; }
+.control-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.2rem; }
+.control-card { min-height:360px; padding:1.5rem; display:flex; flex-direction:column; border:1px solid var(--line); background:#fff; }
+.control-card>div:first-child { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.control-card h2 { margin-top:2rem; font-family:'Playfair Display',serif; font-size:1.8rem; }
+.control-card>p { margin-top:.45rem; color:#58605a; }
+.control-card dl { margin:2rem 0; display:grid; gap:.9rem; }
+.control-card dl div { display:grid; grid-template-columns:110px 1fr; gap:.8rem; font-size:.8rem; }
+.control-card dt { color:#667069; }
+.control-card dd { overflow-wrap:anywhere; }
+.control-store-status { font-size:.75rem; color:#5c655f; }
+.control-actions { margin-top:auto; display:flex; flex-wrap:wrap; gap:.6rem; }
+.control-actions button,.control-actions a { padding:.65rem .8rem; border:1px solid var(--line); background:transparent; color:inherit; cursor:pointer; font-size:.8rem; }
+.status.trial { background:#eee5c9; color:#674f12; }
+.status.inactive { background:#ead8d4; color:#743a31; }
+@media(max-width:1000px){.control-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.control-grid{grid-template-columns:1fr}.control-form>.form-grid,.control-form fieldset{padding:1rem}.control-card{min-height:0}.control-actions button,.control-actions a{font-size:1rem;padding:.8rem}.control-card dl div{grid-template-columns:1fr;gap:.25rem;font-size:.95rem}}
