@@ -47,6 +47,15 @@ const copy = {
     seoDescriptionHelp: "Resumen para buscadores, idealmente 140–160 caracteres. Vacío: utilizaremos la descripción breve.",
     confirmDelete: "¿Seguro que quieres eliminar este producto? Esta acción no se puede deshacer.", required: "Completa los nombres, slugs, SKU y precio.",
     loadError: "No se pudo cargar el panel", authError: "No se pudo iniciar la sesión", deleteError: "No se pudo eliminar el producto", statusUpdated: "Estado actualizado. El catálogo público cambiará al recargar la tienda.",
+    helpTitle: "Cómo utilizar este panel", helpIntro: "Esta guía explica qué hace cada acción y cómo publicar un producto correctamente.",
+    helpCreate: "Crear: pulsa «Añadir producto», elige los idiomas, completa los campos obligatorios y guarda. Si eliges Borrador, todavía no aparecerá en la tienda.",
+    helpPublish: "Publicar: cambia el estado a Publicado o pulsa «Publicar». El producto aparecerá en los idiomas para los que hayas escrito contenido.",
+    helpDisable: "Desactivar: retira temporalmente el producto de la tienda, pero conserva todos sus textos, precio, stock y código. Puedes recuperarlo pulsando «Publicar».",
+    helpArchive: "Archivar: sirve para productos antiguos que quieres conservar como histórico sin mostrarlos al público.",
+    helpDelete: "Eliminar: borra definitivamente el producto y todos sus textos y variantes. No se puede deshacer; normalmente es mejor desactivarlo.",
+    helpLanguages: "Idiomas: selecciona Castellano, Catalán o Ambos. Solo tendrás que rellenar los apartados correspondientes a tu selección.",
+    language: "Idiomas del producto", both: "Castellano y catalán", spanishOnly: "Solo castellano", catalanOnly: "Solo catalán",
+    languageHelp: "Determina en qué versiones de la tienda aparecerá este producto.", helpLink: "Ayuda",
   },
   ca: {
     panel: "Tauler d'administració", store: "Veure la botiga", logout: "Tancar la sessió", login: "Accés d'administració",
@@ -66,11 +75,20 @@ const copy = {
     seoDescriptionHelp: "Resum per als cercadors, idealment 140–160 caràcters. Buit: utilitzarem la descripció breu.",
     confirmDelete: "Segur que vols eliminar aquest producte? Aquesta acció no es pot desfer.", required: "Completa els noms, els slugs, l'SKU i el preu.",
     loadError: "No s'ha pogut carregar el tauler", authError: "No s'ha pogut iniciar la sessió", deleteError: "No s'ha pogut eliminar el producte", statusUpdated: "Estat actualitzat. El catàleg públic canviarà en recarregar la botiga.",
+    helpTitle: "Com utilitzar aquest tauler", helpIntro: "Aquesta guia explica què fa cada acció i com publicar un producte correctament.",
+    helpCreate: "Crear: prem «Afegir producte», tria els idiomes, completa els camps obligatoris i desa. Si tries Esborrany, encara no apareixerà a la botiga.",
+    helpPublish: "Publicar: canvia l'estat a Publicat o prem «Publicar». El producte apareixerà en els idiomes per als quals hagis escrit contingut.",
+    helpDisable: "Desactivar: retira temporalment el producte de la botiga, però conserva tots els textos, el preu, l'estoc i el codi. El pots recuperar prement «Publicar».",
+    helpArchive: "Arxivar: serveix per a productes antics que vols conservar com a històric sense mostrar-los al públic.",
+    helpDelete: "Eliminar: esborra definitivament el producte i tots els textos i variants. No es pot desfer; normalment és millor desactivar-lo.",
+    helpLanguages: "Idiomes: selecciona Castellà, Català o Tots dos. Només hauràs d'emplenar els apartats corresponents a la selecció.",
+    language: "Idiomes del producte", both: "Castellà i català", spanishOnly: "Només castellà", catalanOnly: "Només català",
+    languageHelp: "Determina en quines versions de la botiga apareixerà aquest producte.", helpLink: "Ajuda",
   },
 };
 
 const blankTranslation = (locale: Locale): Translation => ({ locale, name: "", slug: "", short_description: "", description: "", seo_title: "", seo_description: "" });
-const blankForm = () => ({ id: "", internal_name: "", category_id: "", status: "draft" as Product["status"], sku: "", price: "", stock: "0", es: blankTranslation("es"), ca: blankTranslation("ca") });
+const blankForm = () => ({ id: "", internal_name: "", category_id: "", status: "draft" as Product["status"], languages: "both" as "both" | Locale, sku: "", price: "", stock: "0", es: blankTranslation("es"), ca: blankTranslation("ca") });
 type ProductForm = ReturnType<typeof blankForm>;
 
 function slugify(value: string) {
@@ -136,7 +154,9 @@ export default function AdminPanel({ locale }: { locale: Locale }) {
     const es = product.product_translations.find((item) => item.locale === "es") ?? blankTranslation("es");
     const ca = product.product_translations.find((item) => item.locale === "ca") ?? blankTranslation("ca");
     const variant = product.product_variants[0];
-    setEditing({ id: product.id, internal_name: product.internal_name, category_id: product.category_id ?? "", status: product.status, sku: variant?.sku ?? "", price: variant ? (variant.price_cents / 100).toFixed(2) : "", stock: String(variant?.stock_quantity ?? 0), es, ca });
+    const hasEs = product.product_translations.some((item) => item.locale === "es");
+    const hasCa = product.product_translations.some((item) => item.locale === "ca");
+    setEditing({ id: product.id, internal_name: product.internal_name, category_id: product.category_id ?? "", status: product.status, languages: hasEs && hasCa ? "both" : hasCa ? "ca" : "es", sku: variant?.sku ?? "", price: variant ? (variant.price_cents / 100).toFixed(2) : "", stock: String(variant?.stock_quantity ?? 0), es, ca });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -146,7 +166,9 @@ export default function AdminPanel({ locale }: { locale: Locale }) {
 
   async function saveProduct(event: FormEvent) {
     event.preventDefault();
-    if (!editing || !editing.internal_name || !editing.es.name || !editing.ca.name || !editing.es.slug || !editing.ca.slug || !editing.sku || editing.price === "") { setError(t.required); return; }
+    const selectedLanguages: Locale[] = editing?.languages === "both" ? ["es", "ca"] : editing ? [editing.languages] : [];
+    const translationsComplete = editing && selectedLanguages.every((language) => editing[language].name && editing[language].slug);
+    if (!editing || !editing.internal_name || !translationsComplete || !editing.sku || editing.price === "") { setError(t.required); return; }
     setSaving(true); setError(""); setNotice("");
     let productId = editing.id;
     const productValues = { internal_name: editing.internal_name, category_id: editing.category_id || null, status: editing.status };
@@ -155,19 +177,23 @@ export default function AdminPanel({ locale }: { locale: Locale }) {
       : await supabase.from("products").insert(productValues).select("id").single();
     if (productResult.error) { setError(productResult.error.message); setSaving(false); return; }
     productId = productResult.data.id;
-    const translations = [editing.es, editing.ca].map((item) => ({
+    const translations = selectedLanguages.map((language) => editing[language]).map((item) => ({
       ...item,
       seo_title: item.seo_title.trim() || item.name,
       seo_description: item.seo_description.trim() || item.short_description.trim() || item.description.trim(),
       product_id: productId,
     }));
     const translationResult = await supabase.from("product_translations").upsert(translations, { onConflict: "product_id,locale" });
+    const omittedLanguages = (["es", "ca"] as Locale[]).filter((language) => !selectedLanguages.includes(language));
+    const omittedResult = omittedLanguages.length
+      ? await supabase.from("product_translations").delete().eq("product_id", productId).in("locale", omittedLanguages)
+      : { error: null };
     const existingVariant = products.find((item) => item.id === productId)?.product_variants[0];
     const variantValues = { product_id: productId, sku: editing.sku, internal_name: "Única", price_cents: Math.round(Number(editing.price.replace(",", ".")) * 100), stock_quantity: Math.max(0, Number.parseInt(editing.stock) || 0), is_active: true };
     const variantResult = existingVariant
       ? await supabase.from("product_variants").update(variantValues).eq("id", existingVariant.id)
       : await supabase.from("product_variants").insert(variantValues);
-    if (translationResult.error || variantResult.error) setError((translationResult.error ?? variantResult.error)?.message ?? "Error");
+    if (translationResult.error || omittedResult.error || variantResult.error) setError((translationResult.error ?? omittedResult.error ?? variantResult.error)?.message ?? "Error");
     else { await loadCatalog(); setEditing(null); setNotice(t.saved); }
     setSaving(false);
   }
@@ -189,13 +215,13 @@ export default function AdminPanel({ locale }: { locale: Locale }) {
   if (!staff) return <main className="admin-login"><section><h1>{t.noAccess}</h1><button className="admin-primary" onClick={() => supabase.auth.signOut().then(() => setUser(null))}>{t.logout}</button></section></main>;
 
   return <main className="admin-shell">
-    <header className="admin-header"><Image src={publicAsset("/brand/logo.svg")} alt="Nexautia" width={135} height={43}/><div><a href={publicAsset(`/${locale}/`)}>{t.store}</a><a href={publicAsset(`/${locale === "es" ? "ca" : "es"}/admin/`)}>{locale === "es" ? "CA" : "ES"}</a><button onClick={() => supabase.auth.signOut().then(() => { setUser(null); setStaff(false); })}>{t.logout}</button></div></header>
+    <header className="admin-header"><Image src={publicAsset("/brand/logo.svg")} alt="Nexautia" width={135} height={43}/><div><a href={publicAsset(`/${locale}/`)}>{t.store}</a><a href={publicAsset(`/${locale}/admin/ayuda/`)}>{t.helpLink}</a><a href={publicAsset(`/${locale === "es" ? "ca" : "es"}/admin/`)}>{locale === "es" ? "CA" : "ES"}</a><button onClick={() => supabase.auth.signOut().then(() => { setUser(null); setStaff(false); })}>{t.logout}</button></div></header>
     <section className="admin-content">
       <div className="admin-title"><div><p className="eyebrow">Nexautia</p><h1>{t.panel}</h1><p>{t.intro}</p></div>{!editing && <button className="admin-primary" onClick={() => editProduct()}>{t.add}</button>}</div>
       {error && <p className="admin-error">{error}</p>}{notice && <p className="admin-notice">{notice}</p>}
       {editing ? <form className="product-form" onSubmit={saveProduct}>
-        <div className="form-grid compact"><label>{t.internal}<input value={editing.internal_name} onChange={(e) => setEditing({ ...editing, internal_name: e.target.value })} required/><small>{t.internalHelp}</small></label><label>{t.category}<select value={editing.category_id} onChange={(e) => setEditing({ ...editing, category_id: e.target.value })}><option value="">{t.none}</option>{categories.map((category) => <option value={category.id} key={category.id}>{category.internal_name}</option>)}</select></label><label>{t.status}<select value={editing.status} onChange={(e) => setEditing({ ...editing, status: e.target.value as Product["status"] })}><option value="draft">{t.draft}</option><option value="active">{t.active}</option><option value="archived">{t.archived}</option></select></label><label>{t.sku}<input value={editing.sku} onChange={(e) => setEditing({ ...editing, sku: e.target.value.toUpperCase() })} required/><small>{t.skuHelp}</small></label><label>{t.price}<input type="number" min="0" step="0.01" value={editing.price} onChange={(e) => setEditing({ ...editing, price: e.target.value })} required/></label><label>{t.stock}<input type="number" min="0" step="1" value={editing.stock} onChange={(e) => setEditing({ ...editing, stock: e.target.value })}/></label></div>
-        {(["es", "ca"] as Locale[]).map((language) => <fieldset key={language}><legend>{language === "es" ? t.spanish : t.catalan}</legend><div className="form-grid"><label>{t.name}<input value={editing[language].name} onChange={(e) => { const name = e.target.value; updateTranslation(language, "name", name); if (!editing[language].slug) updateTranslation(language, "slug", slugify(name)); }} required/></label><label>{t.slug}<input value={editing[language].slug} onChange={(e) => updateTranslation(language, "slug", slugify(e.target.value))} required/><small>{t.slugHelp}</small></label><label className="wide">{t.short}<input value={editing[language].short_description ?? ""} onChange={(e) => updateTranslation(language, "short_description", e.target.value)}/><small>{t.shortHelp}</small></label><label className="wide">{t.description}<textarea value={editing[language].description ?? ""} onChange={(e) => updateTranslation(language, "description", e.target.value)}/><small>{t.descriptionHelp}</small></label><label>{t.seoTitle}<input value={editing[language].seo_title ?? ""} onChange={(e) => updateTranslation(language, "seo_title", e.target.value)}/><small>{t.seoTitleHelp}</small></label><label>{t.seoDescription}<textarea maxLength={160} value={editing[language].seo_description ?? ""} onChange={(e) => updateTranslation(language, "seo_description", e.target.value)}/><small>{t.seoDescriptionHelp}</small></label></div></fieldset>)}
+        <div className="form-grid compact"><label>{t.internal}<input value={editing.internal_name} onChange={(e) => setEditing({ ...editing, internal_name: e.target.value })} required/><small>{t.internalHelp}</small></label><label>{t.category}<select value={editing.category_id} onChange={(e) => setEditing({ ...editing, category_id: e.target.value })}><option value="">{t.none}</option>{categories.map((category) => <option value={category.id} key={category.id}>{category.internal_name}</option>)}</select></label><label>{t.status}<select value={editing.status} onChange={(e) => setEditing({ ...editing, status: e.target.value as Product["status"] })}><option value="draft">{t.draft}</option><option value="active">{t.active}</option><option value="archived">{t.archived}</option></select></label><label>{t.language}<select value={editing.languages} onChange={(e) => setEditing({ ...editing, languages: e.target.value as ProductForm["languages"] })}><option value="both">{t.both}</option><option value="es">{t.spanishOnly}</option><option value="ca">{t.catalanOnly}</option></select><small>{t.languageHelp}</small></label><label>{t.sku}<input value={editing.sku} onChange={(e) => setEditing({ ...editing, sku: e.target.value.toUpperCase() })} required/><small>{t.skuHelp}</small></label><label>{t.price}<input type="number" min="0" step="0.01" value={editing.price} onChange={(e) => setEditing({ ...editing, price: e.target.value })} required/></label><label>{t.stock}<input type="number" min="0" step="1" value={editing.stock} onChange={(e) => setEditing({ ...editing, stock: e.target.value })}/></label></div>
+        {(["es", "ca"] as Locale[]).filter((language) => editing.languages === "both" || editing.languages === language).map((language) => <fieldset key={language}><legend>{language === "es" ? t.spanish : t.catalan}</legend><div className="form-grid"><label>{t.name}<input value={editing[language].name} onChange={(e) => { const name = e.target.value; updateTranslation(language, "name", name); if (!editing[language].slug) updateTranslation(language, "slug", slugify(name)); }} required/></label><label>{t.slug}<input value={editing[language].slug} onChange={(e) => updateTranslation(language, "slug", slugify(e.target.value))} required/><small>{t.slugHelp}</small></label><label className="wide">{t.short}<input value={editing[language].short_description ?? ""} onChange={(e) => updateTranslation(language, "short_description", e.target.value)}/><small>{t.shortHelp}</small></label><label className="wide">{t.description}<textarea value={editing[language].description ?? ""} onChange={(e) => updateTranslation(language, "description", e.target.value)}/><small>{t.descriptionHelp}</small></label><label>{t.seoTitle}<input value={editing[language].seo_title ?? ""} onChange={(e) => updateTranslation(language, "seo_title", e.target.value)}/><small>{t.seoTitleHelp}</small></label><label>{t.seoDescription}<textarea maxLength={160} value={editing[language].seo_description ?? ""} onChange={(e) => updateTranslation(language, "seo_description", e.target.value)}/><small>{t.seoDescriptionHelp}</small></label></div></fieldset>)}
         <div className="form-actions"><button type="button" onClick={() => setEditing(null)}>{t.cancel}</button><button className="admin-primary" disabled={saving}>{saving ? t.saving : t.save}</button></div>
       </form> : <section className="admin-products"><h2>{t.products}</h2>{products.length === 0 ? <p>{t.empty}</p> : <div className="admin-table">{products.map((product) => { const translation = product.product_translations.find((item) => item.locale === locale); const variant = product.product_variants[0]; return <article key={product.id}><div><strong>{translation?.name ?? product.internal_name}</strong><span>{product.internal_name} · {variant?.sku}</span></div><span className={`status ${product.status}`}>{product.status === "active" ? t.active : product.status === "draft" ? t.draft : t.archived}</span><span>{variant ? `${(variant.price_cents / 100).toFixed(2)} € · ${variant.stock_quantity} ${t.stock.toLowerCase()}` : "—"}</span><div className="row-actions"><button onClick={() => editProduct(product)}>{t.edit}</button><button onClick={() => toggleProduct(product)}>{product.status === "active" ? t.hide : t.publish}</button><button className="danger" onClick={() => deleteProduct(product)}>{t.remove}</button></div></article>; })}</div>}</section>}
     </section>
