@@ -51,6 +51,7 @@ h1 { font-size:clamp(3.8rem,6.6vw,7.2rem); line-height:.91; max-width:830px; }
 .product-meta { display:flex; justify-content:space-between; padding:1rem 0; }.product-meta h3 { font-size:.95rem; font-weight:500; }.product-meta p { font-size:.8rem; }
 .product { display:block; transition:transform .25s ease; }
 .product:hover { transform:translateY(-6px); }
+.catalog-state { padding:2rem 0; color:#555d58; }.catalog-state.error { color:#94362d; }
 .story { background:var(--green); color:#f6f2e9; text-align:center; padding:9rem 15vw; }.story blockquote { font-size:clamp(2.7rem,5vw,5.3rem); line-height:1.08; }.story>p:last-child { max-width:580px; margin:2.5rem auto 0; line-height:1.7; opacity:.72; }
 .values { display:grid; grid-template-columns:repeat(3,1fr); border-bottom:1px solid var(--line); }.values div { padding:3rem 4vw; display:flex; gap:2rem; border-right:1px solid var(--line); }.values span { font-size:.7rem; opacity:.5; }
 .newsletter { padding:7rem 4vw; display:grid; grid-template-columns:1fr 1fr; align-items:end; gap:5rem; }.newsletter h2 { font-size:clamp(2.5rem,4vw,4.7rem); max-width:760px; }.newsletter form { display:flex; border-bottom:1px solid var(--ink); }.newsletter input { flex:1; padding:1rem 0; border:0; background:transparent; outline:0; }.newsletter button { border:0; background:transparent; text-transform:uppercase; font-size:.72rem; cursor:pointer; }

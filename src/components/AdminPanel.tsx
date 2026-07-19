@@ -39,7 +39,7 @@ const copy = {
     name: "Nombre", slug: "Dirección corta (slug)", short: "Descripción breve", description: "Descripción completa", seoTitle: "Título SEO",
     seoDescription: "Descripción SEO", save: "Guardar producto", cancel: "Cancelar", saving: "Guardando…", saved: "Producto guardado.",
     confirmDelete: "¿Seguro que quieres eliminar este producto? Esta acción no se puede deshacer.", required: "Completa los nombres, slugs, SKU y precio.",
-    loadError: "No se pudo cargar el panel", authError: "No se pudo iniciar la sesión", deleteError: "No se pudo eliminar el producto",
+    loadError: "No se pudo cargar el panel", authError: "No se pudo iniciar la sesión", deleteError: "No se pudo eliminar el producto", statusUpdated: "Estado actualizado. El catálogo público cambiará al recargar la tienda.",
   },
   ca: {
     panel: "Tauler d'administració", store: "Veure la botiga", logout: "Tancar la sessió", login: "Accés d'administració",
@@ -51,7 +51,7 @@ const copy = {
     name: "Nom", slug: "Adreça curta (slug)", short: "Descripció breu", description: "Descripció completa", seoTitle: "Títol SEO",
     seoDescription: "Descripció SEO", save: "Desar el producte", cancel: "Cancel·lar", saving: "Desant…", saved: "Producte desat.",
     confirmDelete: "Segur que vols eliminar aquest producte? Aquesta acció no es pot desfer.", required: "Completa els noms, els slugs, l'SKU i el preu.",
-    loadError: "No s'ha pogut carregar el tauler", authError: "No s'ha pogut iniciar la sessió", deleteError: "No s'ha pogut eliminar el producte",
+    loadError: "No s'ha pogut carregar el tauler", authError: "No s'ha pogut iniciar la sessió", deleteError: "No s'ha pogut eliminar el producte", statusUpdated: "Estat actualitzat. El catàleg públic canviarà en recarregar la botiga.",
   },
 };
 
@@ -156,7 +156,7 @@ export default function AdminPanel({ locale }: { locale: Locale }) {
   async function toggleProduct(product: Product) {
     const status = product.status === "active" ? "draft" : "active";
     const { error: updateError } = await supabase.from("products").update({ status }).eq("id", product.id);
-    if (updateError) setError(updateError.message); else await loadCatalog();
+    if (updateError) setError(updateError.message); else { await loadCatalog(); setNotice(t.statusUpdated); }
   }
 
   async function deleteProduct(product: Product) {
@@ -166,11 +166,11 @@ export default function AdminPanel({ locale }: { locale: Locale }) {
   }
 
   if (loading) return <main className="admin-shell"><p>{t.saving}</p></main>;
-  if (!user) return <main className="admin-login"><form onSubmit={login}><Image src={publicAsset("/logo.svg")} alt="Nexautia" width={150} height={48}/><p className="eyebrow">{t.panel}</p><h1>{t.login}</h1><p>{t.intro}</p><label>{t.email}<input name="email" type="email" required autoComplete="username"/></label><label>{t.password}<input name="password" type="password" required autoComplete="current-password"/></label>{error && <p className="admin-error">{error}</p>}<button className="admin-primary" type="submit">{t.enter}</button></form></main>;
+  if (!user) return <main className="admin-login"><form onSubmit={login}><Image src={publicAsset("/brand/logo.svg")} alt="Nexautia" width={150} height={48}/><p className="eyebrow">{t.panel}</p><h1>{t.login}</h1><p>{t.intro}</p><label>{t.email}<input name="email" type="email" required autoComplete="username"/></label><label>{t.password}<input name="password" type="password" required autoComplete="current-password"/></label>{error && <p className="admin-error">{error}</p>}<button className="admin-primary" type="submit">{t.enter}</button></form></main>;
   if (!staff) return <main className="admin-login"><section><h1>{t.noAccess}</h1><button className="admin-primary" onClick={() => supabase.auth.signOut().then(() => setUser(null))}>{t.logout}</button></section></main>;
 
   return <main className="admin-shell">
-    <header className="admin-header"><Image src={publicAsset("/logo.svg")} alt="Nexautia" width={135} height={43}/><div><a href={publicAsset(`/${locale}/`)}>{t.store}</a><a href={publicAsset(`/${locale === "es" ? "ca" : "es"}/admin/`)}>{locale === "es" ? "CA" : "ES"}</a><button onClick={() => supabase.auth.signOut().then(() => { setUser(null); setStaff(false); })}>{t.logout}</button></div></header>
+    <header className="admin-header"><Image src={publicAsset("/brand/logo.svg")} alt="Nexautia" width={135} height={43}/><div><a href={publicAsset(`/${locale}/`)}>{t.store}</a><a href={publicAsset(`/${locale === "es" ? "ca" : "es"}/admin/`)}>{locale === "es" ? "CA" : "ES"}</a><button onClick={() => supabase.auth.signOut().then(() => { setUser(null); setStaff(false); })}>{t.logout}</button></div></header>
     <section className="admin-content">
       <div className="admin-title"><div><p className="eyebrow">Nexautia</p><h1>{t.panel}</h1><p>{t.intro}</p></div>{!editing && <button className="admin-primary" onClick={() => editProduct()}>{t.add}</button>}</div>
       {error && <p className="admin-error">{error}</p>}{notice && <p className="admin-notice">{notice}</p>}

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary, locales, type Locale } from "@/lib/dictionaries";
 import CartIndicator from "@/components/CartIndicator";
-import { getCatalog } from "@/lib/catalog";
+import CatalogGrid from "@/components/CatalogGrid";
 import { publicAsset, publicSiteUrl } from "@/lib/site";
 
 const categories = [
@@ -31,7 +31,6 @@ export default async function Storefront({ params }: { params: Promise<{ lang: s
   if (!locales.includes(lang as Locale)) notFound();
   const locale = lang as Locale;
   const d = getDictionary(locale);
-  const products = await getCatalog(locale);
   const other = locale === "es" ? "ca" : "es";
   const structuredData = {
     "@context": "https://schema.org", "@type": "OnlineStore", name: "Nexautia Shop",
@@ -70,7 +69,7 @@ export default async function Storefront({ params }: { params: Promise<{ lang: s
 
         <section className="section products" id="productos" aria-labelledby="products-title">
           <div className="section-heading horizontal"><div><p className="eyebrow">{d.edition}</p><h2 id="products-title">{d.productsTitle}</h2></div><a className="text-link" href="#productos">{d.viewAll} →</a></div>
-          <div className="product-grid">{products.map((product, index) => <Link href={`/${locale}/producto/${product.slug}`} className="product" key={product.id}><div className={`product-image ${product.tone}`}><span>{String(index + 1).padStart(2, "0")}</span><div className="object"/></div><div className="product-meta"><h3>{product.name}</h3><p>{product.price} EUR</p></div></Link>)}</div>
+          <CatalogGrid locale={locale}/>
         </section>
 
         <section className="story" id="historia"><p className="eyebrow">Nexautia / Template</p><blockquote>{locale === "es" ? "Una tienda no deber\u00eda parecer un cat\u00e1logo infinito. Deber\u00eda sentirse como una buena conversaci\u00f3n." : "Una botiga no hauria de semblar un cat\u00e0leg infinit. Hauria de sentir-se com una bona conversa."}</blockquote><p>{locale === "es" ? "Dise\u00f1o sobrio, contenido comprensible y tecnolog\u00eda preparada para crecer con cada marca." : "Disseny sobri, contingut entenedor i tecnologia preparada per cr\u00e9ixer amb cada marca."}</p><a className="back-top" href="#top">{locale === "es" ? "Volver arriba" : "Tornar a dalt"} &uarr;</a></section>
