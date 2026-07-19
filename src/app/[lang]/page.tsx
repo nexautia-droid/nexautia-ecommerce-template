@@ -51,7 +51,7 @@ export default async function Storefront({ params }: { params: Promise<{ lang: s
         <section className="hero">
           <div className="hero-copy">
             <p className="eyebrow">{d.eyebrow}</p><h1>{d.title}</h1><p className="lead">{d.intro}</p>
-            <div className="hero-actions"><a className="button primary" href="#productos">{d.cta}</a><a className="text-link" href="#historia">{d.secondary} →</a></div>
+            <div className="hero-actions"><a className="button primary" href="#categorias">{d.cta}</a><a className="text-link" href="#historia">{d.secondary} →</a></div>
           </div>
           <div className="hero-art" aria-label={d.heroArtLabel}><span className="orb orb-one"/><span className="orb orb-two"/><span className="vase"/><span className="pedestal"/></div>
         </section>

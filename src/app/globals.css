@@ -36,13 +36,14 @@ h1 { font-size:clamp(3.8rem,6.6vw,7.2rem); line-height:.91; max-width:830px; }
 .section { padding:8rem 4vw; }
 .section-heading h2 { font-size:clamp(2.7rem,4.5vw,5rem); }
 .section-heading.horizontal { display:flex; align-items:end; justify-content:space-between; margin-bottom:3rem; }
-.category-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); margin-top:3rem; border:1px solid var(--line); }
+.category-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); margin-top:3rem; border:1px solid var(--line); }
 .category-card { height:360px; padding:2rem; display:grid; grid-template-columns:1fr auto; grid-template-rows:1fr auto; position:relative; overflow:hidden; }
 .category-card { border:0; color:var(--ink); text-align:left; cursor:pointer; }.category-card.selected { outline:4px solid var(--ink); outline-offset:-4px; }
 .category-card:after { content:''; position:absolute; width:170px; height:210px; border-radius:50% 50% 38% 38%; right:13%; top:20%; background:rgba(255,255,255,.34); box-shadow:inset -18px -12px 30px rgba(0,0,0,.06); transition:.4s; }
 .category-card:hover:after { transform:translateY(-8px) rotate(4deg); }
 .category-card span { font-size:.72rem; }.category-card strong { font-family:'Playfair Display',serif; font-size:2rem; align-self:end; }.category-card i { align-self:end; font-style:normal; }
 .sand { background:#d8c8b3; }.sage { background:#aab6a4; }.clay { background:#c59175; }
+.all-products { background:var(--ink); color:#fff; }.all-products:after { border-radius:50%; background:rgba(255,255,255,.12); box-shadow:none; }.all-products strong { position:absolute; inset:0; z-index:1; display:grid; place-items:center; padding:3rem; text-align:center; }.all-products span,.all-products i { position:relative; z-index:2; }
 .products { background:#f0ece2; }
 .product-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.3rem; }
 .product-image { height:430px; position:relative; display:grid; place-items:center; overflow:hidden; }.product-image>span { position:absolute; top:1rem; left:1rem; font-size:.68rem; }
@@ -85,7 +86,7 @@ footer { background:#111914; color:#fff; padding:4rem 4vw; display:grid; grid-te
 .cart-total { display:flex; justify-content:flex-end; gap:3rem; margin:2rem 0; font-size:1.3rem; }.checkout { float:right; border:0; opacity:.65; }
 @media(max-width:800px){.product-detail{grid-template-columns:1fr}.detail-image{min-height:480px}.detail-copy{padding:5rem 7vw}.detail-header{min-height:78px}}
 @media(max-width:620px){.cart-row{grid-template-columns:1fr auto;gap:1rem}.cart-row>strong{grid-column:1}.empty-cart{align-items:flex-start;flex-direction:column}.detail-header>div{gap:.8rem;font-size:.62rem}}
-@media(max-width:960px){.site-header{grid-template-columns:1fr auto;height:78px}.site-header nav{display:none}.hero{grid-template-columns:1fr}.hero-copy{padding:6rem 6vw}.hero-art{min-height:520px}.product-grid{grid-template-columns:repeat(2,1fr)}.category-card{height:280px}.newsletter{grid-template-columns:1fr}.header-actions button:nth-child(2){display:none}}
+@media(max-width:960px){.site-header{grid-template-columns:1fr auto;height:78px}.site-header nav{display:none}.hero{grid-template-columns:1fr}.hero-copy{padding:6rem 6vw}.hero-art{min-height:520px}.product-grid,.category-grid{grid-template-columns:repeat(2,1fr)}.category-card{height:280px}.newsletter{grid-template-columns:1fr}.header-actions button:nth-child(2){display:none}}
 @media(max-width:620px){.announcement{font-size:.58rem}.brand img{width:118px}.header-actions{gap:.65rem}.header-actions button:first-child{display:none}.hero-copy{padding:5rem 6vw}.hero-art{min-height:420px}.section{padding:5rem 5vw}.category-grid,.product-grid{grid-template-columns:1fr}.category-card{height:230px}.product-image{height:390px}.values{grid-template-columns:1fr}.values div{border-bottom:1px solid var(--line)}.story{padding:6rem 7vw}footer{grid-template-columns:1fr;text-align:center}footer img{margin:auto}footer div{flex-wrap:wrap}footer p{text-align:center}.section-heading.horizontal{align-items:flex-start;gap:2rem;flex-direction:column}}
 
 /* Reusable bilingual administration panel */
