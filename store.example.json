@@ -1,0 +1,12 @@
+{
+  "internalName": "example-store",
+  "defaultLocale": "es-ES",
+  "supportedLocales": ["es-ES", "ca-ES"],
+  "currency": "EUR",
+  "theme": {
+    "brandName": "Empresa de ejemplo",
+    "logo": null,
+    "primaryColor": "#111827",
+    "accentColor": "#16a34a"
+  }
+}
