@@ -1,21 +1,15 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary, locales, type Locale } from "@/lib/dictionaries";
 import CartIndicator from "@/components/CartIndicator";
+import { getCatalog } from "@/lib/catalog";
 
 const categories = [
   { name: "Mesa", tone: "sand", number: "01" },
   { name: "Hogar", tone: "sage", number: "02" },
   { name: "Bienestar", tone: "clay", number: "03" },
-];
-
-const products = [
-  { slug: "jarron-calma", es: "Jarr\u00f3n Calma", ca: "Gerro Calma", price: "48 EUR", tone: "product-a" },
-  { slug: "lampara-alba", es: "L\u00e1mpara Alba", ca: "Ll\u00e0ntia Alba", price: "89 EUR", tone: "product-b" },
-  { slug: "bandeja-origen", es: "Bandeja Origen", ca: "Safata Origen", price: "36 EUR", tone: "product-c" },
-  { slug: "textil-bruma", es: "Textil Bruma", ca: "T\u00e8xtil Bruma", price: "52 EUR", tone: "product-d" },
 ];
 
 export function generateStaticParams() { return locales.map((lang) => ({ lang })); }
@@ -31,12 +25,12 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     openGraph: { title: d.title, description: d.intro, locale: lang === "ca" ? "ca_ES" : "es_ES", type: "website" },
   };
 }
-
 export default async function Storefront({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!locales.includes(lang as Locale)) notFound();
   const locale = lang as Locale;
   const d = getDictionary(locale);
+  const products = await getCatalog(locale);
   const other = locale === "es" ? "ca" : "es";
   const structuredData = {
     "@context": "https://schema.org", "@type": "OnlineStore", name: "Nexautia Shop",
@@ -75,7 +69,7 @@ export default async function Storefront({ params }: { params: Promise<{ lang: s
 
         <section className="section products" id="productos" aria-labelledby="products-title">
           <div className="section-heading horizontal"><div><p className="eyebrow">Edicion Nexautia</p><h2 id="products-title">{d.productsTitle}</h2></div><a className="text-link" href="#productos">{d.viewAll} →</a></div>
-          <div className="product-grid">{products.map((product, index) => <Link href={`/${locale}/producto/${product.slug}`} className="product" key={product.slug}><div className={`product-image ${product.tone}`}><span>{String(index + 1).padStart(2, "0")}</span><div className="object"/></div><div className="product-meta"><h3>{product[locale]}</h3><p>{product.price}</p></div></Link>)}</div>
+          <div className="product-grid">{products.map((product, index) => <Link href={`/${locale}/producto/${product.slug}`} className="product" key={product.id}><div className={`product-image ${product.tone}`}><span>{String(index + 1).padStart(2, "0")}</span><div className="object"/></div><div className="product-meta"><h3>{product.name}</h3><p>{product.price} EUR</p></div></Link>)}</div>
         </section>
 
         <section className="story" id="historia"><p className="eyebrow">Nexautia / Template</p><blockquote>{locale === "es" ? "Una tienda no deber\u00eda parecer un cat\u00e1logo infinito. Deber\u00eda sentirse como una buena conversaci\u00f3n." : "Una botiga no hauria de semblar un cat\u00e0leg infinit. Hauria de sentir-se com una bona conversa."}</blockquote><p>{locale === "es" ? "Dise\u00f1o sobrio, contenido comprensible y tecnolog\u00eda preparada para crecer con cada marca." : "Disseny sobri, contingut entenedor i tecnologia preparada per cr\u00e9ixer amb cada marca."}</p><a className="back-top" href="#top">{locale === "es" ? "Volver arriba" : "Tornar a dalt"} &uarr;</a></section>
@@ -87,3 +81,4 @@ export default async function Storefront({ params }: { params: Promise<{ lang: s
     </>
   );
 }
+
