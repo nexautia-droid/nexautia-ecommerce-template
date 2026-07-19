@@ -80,6 +80,33 @@ grant execute on function public.is_nexautia_operator() to authenticated;
 
 -- Safe demo records. They represent control-panel tests, not separate Supabase projects.
 insert into public.nexautia_clients (name, slug, contact_email, status, notes)
+values ('Nexautia', 'nexautia', 'nexautia@gmail.com', 'active', 'Tienda real utilizada para desarrollar y comprobar la plantilla.')
+on conflict (slug) do update set
+  name = excluded.name,
+  contact_email = excluded.contact_email,
+  status = excluded.status,
+  notes = excluded.notes;
+
+insert into public.nexautia_client_stores (client_id, name, public_url, admin_url, github_repository, supabase_project_ref, languages, status)
+select id,
+  'Nexautia E-commerce',
+  'https://nexautia-droid.github.io/nexautia-ecommerce-template/es/',
+  'https://nexautia-droid.github.io/nexautia-ecommerce-template/es/admin/',
+  'nexautia-droid/nexautia-ecommerce-template',
+  'hrzpuozofqtbxpkrqprw',
+  array['es','ca']::text[],
+  'published'
+from public.nexautia_clients where slug = 'nexautia'
+on conflict (client_id) do update set
+  name = excluded.name,
+  public_url = excluded.public_url,
+  admin_url = excluded.admin_url,
+  github_repository = excluded.github_repository,
+  supabase_project_ref = excluded.supabase_project_ref,
+  languages = excluded.languages,
+  status = excluded.status;
+
+insert into public.nexautia_clients (name, slug, contact_email, status, notes)
 values
   ('Cliente Demo Barcelona', 'demo-barcelona', 'barcelona@example.com', 'trial', 'Cliente ficticio para comprobar el panel.'),
   ('Cliente Demo Girona', 'demo-girona', 'girona@example.com', 'trial', 'Cliente ficticio para comprobar el panel.'),

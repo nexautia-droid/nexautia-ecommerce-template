@@ -41,7 +41,7 @@ const text = {
     saved: "Cliente guardado correctamente.", changed: "Estado actualizado.", loadError: "No se pudo cargar el panel central",
     authError: "No se pudo iniciar la sesión", noAccess: "Este usuario no pertenece al equipo autorizado de Nexautia.", login: "Acceso interno de Nexautia",
     password: "Contraseña", enter: "Entrar", required: "Completa al menos el nombre del cliente, su identificador y el nombre de la tienda.",
-    explanation: "Crear un registro aquí no genera todavía otro Supabase: sirve para probar y organizar las futuras instalaciones.", open: "Abrir",
+    explanation: "Crear un registro aquí no genera todavía otro Supabase: sirve para probar y organizar las futuras instalaciones.", openShop: "Abrir tienda", openAdmin: "Abrir panel",
   },
   ca: {
     title: "Control de clients", intro: "Gestiona les botigues instal·lades per Nexautia sense barrejar-ne els catàlegs.", newClient: "Client nou",
@@ -54,7 +54,7 @@ const text = {
     saved: "Client desat correctament.", changed: "Estat actualitzat.", loadError: "No s'ha pogut carregar el tauler central",
     authError: "No s'ha pogut iniciar la sessió", noAccess: "Aquest usuari no pertany a l'equip autoritzat de Nexautia.", login: "Accés intern de Nexautia",
     password: "Contrasenya", enter: "Entrar", required: "Completa com a mínim el nom del client, l'identificador i el nom de la botiga.",
-    explanation: "Crear un registre aquí encara no genera un altre Supabase: serveix per provar i organitzar les instal·lacions futures.", open: "Obrir",
+    explanation: "Crear un registre aquí encara no genera un altre Supabase: serveix per provar i organitzar les instal·lacions futures.", openShop: "Obrir botiga", openAdmin: "Obrir tauler",
   },
 };
 
@@ -172,7 +172,7 @@ export default function NexautiaControlPanel({ locale }: { locale: Locale }) {
           <label>{t.supabaseRef}<input value={editing.supabaseProjectRef} onChange={(event) => setEditing({ ...editing, supabaseProjectRef: event.target.value })}/></label>
         </div></fieldset>
         <div className="form-actions"><button type="button" onClick={() => setEditing(null)}>{t.cancel}</button><button className="admin-primary">{t.save}</button></div>
-      </form> : <section className="control-grid">{clients.length === 0 ? <p>{t.empty}</p> : clients.map((client) => { const store = client.nexautia_client_stores[0]; return <article className="control-card" key={client.id}><div><span className={`status ${client.status}`}>{t[client.status]}</span><span className="control-store-status">{store ? t[store.status] : t.planning}</span></div><h2>{client.name}</h2><p>{store?.name}</p><dl><div><dt>{t.email}</dt><dd>{client.contact_email || "—"}</dd></div><div><dt>{t.languages}</dt><dd>{store?.languages.join(" / ").toUpperCase() || "—"}</dd></div><div><dt>Supabase</dt><dd>{store?.supabase_project_ref || "—"}</dd></div></dl><div className="control-actions"><button onClick={() => editClient(client)}>{t.edit}</button><button onClick={() => toggleClient(client)}>{client.status === "inactive" ? t.activate : t.deactivate}</button>{store?.public_url && <a href={store.public_url} target="_blank" rel="noreferrer">{t.open} ↗</a>}</div></article>; })}</section>}
+      </form> : <section className="control-grid">{clients.length === 0 ? <p>{t.empty}</p> : clients.map((client) => { const store = client.nexautia_client_stores[0]; return <article className="control-card" key={client.id}><div><span className={`status ${client.status}`}>{t[client.status]}</span><span className="control-store-status">{store ? t[store.status] : t.planning}</span></div><h2>{client.name}</h2><p>{store?.name}</p><dl><div><dt>{t.email}</dt><dd>{client.contact_email || "—"}</dd></div><div><dt>{t.languages}</dt><dd>{store?.languages.join(" / ").toUpperCase() || "—"}</dd></div><div><dt>Supabase</dt><dd>{store?.supabase_project_ref || "—"}</dd></div></dl><div className="control-actions"><button onClick={() => editClient(client)}>{t.edit}</button><button onClick={() => toggleClient(client)}>{client.status === "inactive" ? t.activate : t.deactivate}</button>{store?.public_url && <a href={store.public_url} target="_blank" rel="noreferrer">{t.openShop} ↗</a>}{store?.admin_url && <a href={store.admin_url} target="_blank" rel="noreferrer">{t.openAdmin} ↗</a>}</div></article>; })}</section>}
     </section>
   </main>;
 }

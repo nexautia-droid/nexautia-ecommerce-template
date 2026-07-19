@@ -20,6 +20,8 @@ Las tablas `nexautia_clients`, `nexautia_client_stores` y `nexautia_control_user
 
 Mientras no existan clientes reales, los clientes de demostración se guardan en el proyecto actual de Supabase. Son registros de prueba y no consumen proyectos adicionales. No crean automáticamente repositorios, dominios ni proyectos Supabase.
 
+Nexautia aparece además como primera instalación real de referencia. Su ficha enlaza la tienda pública, el panel comercial, GitHub y el proyecto Supabase actuales; desde **Abrir panel** se pueden realizar pruebas reales de catálogo.
+
 ## 4. Alta de un cliente de prueba
 
 1. Entrar en `/es/nexautia/` con un usuario incluido en `staff_users`.
