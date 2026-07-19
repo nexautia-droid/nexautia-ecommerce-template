@@ -26,8 +26,12 @@ type Client = {
   contact_email: string | null;
   status: ClientStatus;
   notes: string | null;
-  nexautia_client_stores: Store[];
+  nexautia_client_stores: Store | Store[] | null;
 };
+
+function clientStore(client: Client) {
+  return Array.isArray(client.nexautia_client_stores) ? client.nexautia_client_stores[0] : client.nexautia_client_stores;
+}
 
 const text = {
   es: {
@@ -114,7 +118,7 @@ export default function NexautiaControlPanel({ locale }: { locale: Locale }) {
 
   function editClient(client?: Client) {
     if (!client) { setEditing(blankForm()); return; }
-    const store = client.nexautia_client_stores[0];
+    const store = clientStore(client);
     const languages = store?.languages.includes("es") && store.languages.includes("ca") ? "both" : store?.languages[0] ?? "es";
     setEditing({ id: client.id, storeId: store?.id ?? "", name: client.name, slug: client.slug, contactEmail: client.contact_email ?? "", clientStatus: client.status, notes: client.notes ?? "", storeName: store?.name ?? "", storeStatus: store?.status ?? "planning", languages, publicUrl: store?.public_url ?? "", adminUrl: store?.admin_url ?? "", githubRepository: store?.github_repository ?? "", supabaseProjectRef: store?.supabase_project_ref ?? "" });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -172,7 +176,7 @@ export default function NexautiaControlPanel({ locale }: { locale: Locale }) {
           <label>{t.supabaseRef}<input value={editing.supabaseProjectRef} onChange={(event) => setEditing({ ...editing, supabaseProjectRef: event.target.value })}/></label>
         </div></fieldset>
         <div className="form-actions"><button type="button" onClick={() => setEditing(null)}>{t.cancel}</button><button className="admin-primary">{t.save}</button></div>
-      </form> : <section className="control-grid">{clients.length === 0 ? <p>{t.empty}</p> : clients.map((client) => { const store = client.nexautia_client_stores[0]; return <article className="control-card" key={client.id}><div><span className={`status ${client.status}`}>{t[client.status]}</span><span className="control-store-status">{store ? t[store.status] : t.planning}</span></div><h2>{client.name}</h2><p>{store?.name}</p><dl><div><dt>{t.email}</dt><dd>{client.contact_email || "—"}</dd></div><div><dt>{t.languages}</dt><dd>{store?.languages.join(" / ").toUpperCase() || "—"}</dd></div><div><dt>Supabase</dt><dd>{store?.supabase_project_ref || "—"}</dd></div></dl><div className="control-actions"><button onClick={() => editClient(client)}>{t.edit}</button><button onClick={() => toggleClient(client)}>{client.status === "inactive" ? t.activate : t.deactivate}</button>{store?.public_url && <a href={store.public_url} target="_blank" rel="noreferrer">{t.openShop} ↗</a>}{store?.admin_url && <a href={store.admin_url} target="_blank" rel="noreferrer">{t.openAdmin} ↗</a>}</div></article>; })}</section>}
+      </form> : <section className="control-grid">{clients.length === 0 ? <p>{t.empty}</p> : clients.map((client) => { const store = clientStore(client); return <article className="control-card" key={client.id}><div><span className={`status ${client.status}`}>{t[client.status]}</span><span className="control-store-status">{store ? t[store.status] : t.planning}</span></div><h2>{client.name}</h2><p>{store?.name}</p><dl><div><dt>{t.email}</dt><dd>{client.contact_email || "—"}</dd></div><div><dt>{t.languages}</dt><dd>{store?.languages.join(" / ").toUpperCase() || "—"}</dd></div><div><dt>Supabase</dt><dd>{store?.supabase_project_ref || "—"}</dd></div></dl><div className="control-actions"><button onClick={() => editClient(client)}>{t.edit}</button><button onClick={() => toggleClient(client)}>{client.status === "inactive" ? t.activate : t.deactivate}</button>{store?.public_url && <a href={store.public_url} target="_blank" rel="noreferrer">{t.openShop} ↗</a>}{store?.admin_url && <a href={store.admin_url} target="_blank" rel="noreferrer">{t.openAdmin} ↗</a>}</div></article>; })}</section>}
     </section>
   </main>;
 }
