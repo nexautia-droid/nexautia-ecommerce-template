@@ -4,14 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary, locales, type Locale } from "@/lib/dictionaries";
 import CartIndicator from "@/components/CartIndicator";
-import CatalogGrid from "@/components/CatalogGrid";
+import StoreCatalog from "@/components/StoreCatalog";
 import { publicAsset, publicSiteUrl } from "@/lib/site";
-
-const categories = [
-  { tone: "sand", number: "01" },
-  { tone: "sage", number: "02" },
-  { tone: "clay", number: "03" },
-];
 
 export function generateStaticParams() { return locales.map((lang) => ({ lang })); }
 
@@ -62,15 +56,7 @@ export default async function Storefront({ params }: { params: Promise<{ lang: s
           <div className="hero-art" aria-label={d.heroArtLabel}><span className="orb orb-one"/><span className="orb orb-two"/><span className="vase"/><span className="pedestal"/></div>
         </section>
 
-        <section className="section categories" aria-labelledby="categories-title">
-          <div className="section-heading"><p className="eyebrow">01 / 03</p><h2 id="categories-title">{d.categoriesTitle}</h2></div>
-          <div className="category-grid">{categories.map((category, index) => <a href="#productos" className={`category-card ${category.tone}`} key={category.number}><span>{category.number}</span><strong>{d.categoryNames[index]}</strong><i>→</i></a>)}</div>
-        </section>
-
-        <section className="section products" id="productos" aria-labelledby="products-title">
-          <div className="section-heading horizontal"><div><p className="eyebrow">{d.edition}</p><h2 id="products-title">{d.productsTitle}</h2></div><a className="text-link" href="#productos">{d.viewAll} →</a></div>
-          <CatalogGrid locale={locale}/>
-        </section>
+        <StoreCatalog locale={locale} categoriesTitle={d.categoriesTitle} productsTitle={d.productsTitle} edition={d.edition} viewAll={d.viewAll}/>
 
         <section className="story" id="historia"><p className="eyebrow">Nexautia / Template</p><blockquote>{locale === "es" ? "Una tienda no deber\u00eda parecer un cat\u00e1logo infinito. Deber\u00eda sentirse como una buena conversaci\u00f3n." : "Una botiga no hauria de semblar un cat\u00e0leg infinit. Hauria de sentir-se com una bona conversa."}</blockquote><p>{locale === "es" ? "Dise\u00f1o sobrio, contenido comprensible y tecnolog\u00eda preparada para crecer con cada marca." : "Disseny sobri, contingut entenedor i tecnologia preparada per cr\u00e9ixer amb cada marca."}</p><a className="back-top" href="#top">{locale === "es" ? "Volver arriba" : "Tornar a dalt"} &uarr;</a></section>
         <section className="values">{d.values.map((value, index) => <div key={value}><span>0{index + 1}</span><strong>{value}</strong></div>)}</section>

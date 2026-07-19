@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 
 export type CatalogProduct = {
   id: string;
+  categoryId: string | null;
   name: string;
   slug: string;
   description: string;
@@ -15,6 +16,7 @@ export type CatalogProduct = {
 
 type CatalogRow = {
   id: string;
+  category_id: string | null;
   product_translations: Array<{ name: string; slug: string; description: string | null; seo_title: string | null; seo_description: string | null }>;
   product_variants: Array<{ price_cents: number; stock_quantity: number }>;
   product_images: Array<{ storage_path: string; sort_order: number }>;
@@ -23,7 +25,7 @@ type CatalogRow = {
 export async function getCatalog(locale: Locale): Promise<CatalogProduct[]> {
   const { data, error } = await supabase
     .from("products")
-    .select("id, product_translations!inner(name,slug,description,seo_title,seo_description), product_variants!inner(price_cents,stock_quantity,is_active), product_images(storage_path,sort_order)")
+    .select("id,category_id, product_translations!inner(name,slug,description,seo_title,seo_description), product_variants!inner(price_cents,stock_quantity,is_active), product_images(storage_path,sort_order)")
     .eq("status", "active")
     .eq("product_translations.locale", locale)
     .eq("product_variants.is_active", true)
@@ -38,6 +40,7 @@ export async function getCatalog(locale: Locale): Promise<CatalogProduct[]> {
     if (!translation || !variant) return [];
     return [{
       id: row.id,
+      categoryId: row.category_id,
       name: translation.name,
       slug: translation.slug,
       description: translation.description ?? "",
